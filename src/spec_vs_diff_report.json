@@ -1,0 +1,84 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-05T08:57:16.059Z",
+  "summary": "Frontend UI and theming were added (header/hero/banner, uploader, gallery grid/cards) plus custom-domain runtime config and a written CUSTOM_DOMAIN.md guide. However, the backend image APIs and frontend data hooks appear to be placeholders/non-functional based on the diff, and the required generated static image files themselves are not shown as added. Internet Identity/auth scaffolding was added even though the app is specified to work without authentication.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Implement backend image storage APIs (upload/list/fetch/delete) that work without authentication and return required metadata.",
+      "reason": "backend/main.mo only includes an imported mixin with no visible upload/list/fetch/delete methods or return shapes; frontend hooks explicitly warn that backend methods are 'not yet available' and return empty/mock data, indicating the API contract is not implemented/exposed end-to-end.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Frontend must actually upload, list, display, and delete images via backend APIs with loading/error states.",
+      "reason": "While UI components exist, the data layer is stubbed: list returns [] with a warning, upload simulates progress and returns a mock success, and delete logs a warning without calling a backend method. This prevents gallery population and real delete/upload behavior.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/components/gallery/GalleryGrid.tsx",
+        "frontend/src/components/gallery/ImageUploader.tsx",
+        "frontend/src/components/gallery/GalleryItemCard.tsx"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Add the required generated static images under frontend/public/assets/generated and reference them in the UI.",
+      "reason": "UI references the logo and hero banner paths, but the diff summary does not show the actual image files being added under frontend/public/assets/generated.",
+      "evidence": [
+        "frontend/src/components/Header.tsx",
+        "frontend/src/App.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Internet Identity authentication scaffolding (provider, hooks, identity-aware actor creation).",
+      "reason": "BuildRequest explicitly requires that all image methods work without Internet Identity sign-in and does not request adding authentication now; diff adds II context/provider and uses identity in actor creation.",
+      "evidence": [
+        "frontend/src/main.tsx",
+        "frontend/src/hooks/useInternetIdentity.ts",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "Download button/action for each gallery item.",
+      "reason": "BuildRequest only asked for upload, gallery view, and delete; download functionality was not requested.",
+      "evidence": [
+        "frontend/src/components/gallery/GalleryItemCard.tsx"
+      ]
+    },
+    {
+      "description": "Polling/auto-refresh of gallery list every 10 seconds.",
+      "reason": "Live updates were a non-goal (no real-time collaboration/live updates); while polling is not WebSockets, periodic refetch was not requested.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    }
+  ],
+  "confidence": 0.78,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/CUSTOM_DOMAIN.md",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/gallery/GalleryGrid.tsx",
+    "frontend/src/components/gallery/GalleryItemCard.tsx",
+    "frontend/src/components/gallery/ImageUploader.tsx",
+    "frontend/src/config/runtime.ts",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

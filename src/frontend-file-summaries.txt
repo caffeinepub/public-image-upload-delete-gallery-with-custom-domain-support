@@ -1,0 +1,12 @@
+{
+  "frontend/src/index.css": "Global styles with warm neutral color palette (terracotta accent) using OKLCH color system for both light and dark modes, custom gallery grid layout, and Inter font family.",
+  "frontend/src/config/runtime.ts": "Runtime configuration module that derives network and host settings from environment variables and browser origin, supporting both default canister URLs and custom domains without hardcoded assumptions.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for image gallery operations with placeholder implementations that log warnings until the blob-storage mixin methods are properly exposed in the backend interface, includes helper function to convert Uint8Array to blob URLs with proper ArrayBuffer type handling to avoid TypeScript compatibility issues.",
+  "frontend/src/components/Header.tsx": "Header and footer components displaying the site logo, title, and attribution footer with caffeine.ai link.",
+  "frontend/src/components/gallery/ImageUploader.tsx": "Image upload component with drag-and-drop support, file validation, preview, progress tracking, and error handling for JPEG/PNG/WebP/GIF files up to 10MB.",
+  "frontend/src/components/gallery/GalleryItemCard.tsx": "Gallery item card component displaying image thumbnail with hover overlay showing metadata, download button, and delete action with confirmation modal, uses blob URLs created from image data for display.",
+  "frontend/src/components/gallery/GalleryGrid.tsx": "Gallery grid component that displays all uploaded images in a responsive grid layout with loading, error, and empty states.",
+  "frontend/src/App.tsx": "Main application component composing header, hero banner with generated image, upload section, gallery grid, and footer in a full-height layout.",
+  "frontend/CUSTOM_DOMAIN.md": "Comprehensive guide for connecting a custom domain to the IC application, including DNS configuration, SSL/TLS setup, verification steps, and troubleshooting tips.",
+  "frontend/tailwind.config.js": "Tailwind configuration with warm neutral color tokens, Inter font family, custom border radius, shadows, and animation utilities."
+}

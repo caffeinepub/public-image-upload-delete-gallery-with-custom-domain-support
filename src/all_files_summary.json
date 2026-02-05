@@ -1,0 +1,21 @@
+{
+  "backend/main.mo": "Actor imports and includes the blob-storage mixin to expose storage functionality.",
+  "feature_evidence.json": "Contains feature evidence entries mapping features to files, components, test IDs, and confidence levels.",
+  "frontend-file-summaries.txt": "Provides short descriptions of various frontend files and their roles in styling, configuration, and gallery functionality.",
+  "frontend/CUSTOM_DOMAIN.md": "Guide detailing how to set up a custom domain for the IC app, including DNS and verification steps.",
+  "frontend/index.css": "Tailwind base styles defining a warm neutral OKLCH color system, dark mode variables, and global layout rules.",
+  "frontend/index.html": "Base HTML document mounting the React app and loading main.tsx.",
+  "frontend/src/App.tsx": "Main React layout combining header, hero banner, uploader, and gallery sections.",
+  "frontend/src/components/gallery/GalleryGrid.tsx": "Displays images in a responsive grid with loading, error, and empty states.",
+  "frontend/src/components/gallery/GalleryItemCard.tsx": "Renders an image card with metadata, hover overlay, download option, and delete confirmation modal.",
+  "frontend/src/components/gallery/ImageUploader.tsx": "Image upload component supporting drag‑and‑drop, validation, previews, and upload progress.",
+  "frontend/src/components/Header.tsx": "Header and footer components showing branding and attribution footer.",
+  "frontend/src/config/runtime.ts": "Generates runtime configuration for backend canister ID and host, supporting custom domains.",
+  "frontend/src/hooks/useActor.ts": "Creates and manages a backend actor tied to the current Internet Identity, recreating it when identity changes and invalidating dependent queries.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides a React context and hooks for handling Internet Identity login, logout, stored identities, and authentication state.",
+  "frontend/src/hooks/useQueries.ts": "Defines react-query hooks for listing, uploading, and deleting images using the backend actor, with placeholder implementations until backend methods are available.",
+  "frontend/src/index.css": "Configures Tailwind base styles and a warm neutral color theme, plus global styles and a gallery grid layout.",
+  "frontend/src/main.tsx": "Bootstraps the React app with react-query and Internet Identity providers.",
+  "frontend/tailwind.config.js": "Tailwind configuration extending theme colors, fonts, animations, and enabling plugins like typography and container queries.",
+  "project_state.json": "Describes the project’s current state, features, pending requests, image requirements, and metadata for build planning."
+}

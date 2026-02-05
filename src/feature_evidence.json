@@ -1,0 +1,88 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-build-a-frontend-ui-that-lets-any-visitor-upload-images-view-a-gallery-of-uploaded-images-and-delete-images-from-the-gallery",
+      "featureTitle": "Build a frontend UI that lets any visitor upload images, view a gallery of uploaded images, and delete images from the gallery.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/gallery/GalleryGrid.tsx",
+        "frontend/src/components/gallery/GalleryItemCard.tsx",
+        "frontend/src/components/gallery/ImageUploader.tsx",
+        "frontend/src/main.tsx"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-custom-domain-support-guidance-and-ensure-the-app-works-correctly-when-served-from-a-custom-domain-no-hard-coded-localhost-canister-domain-assumptions-in-the-ui",
+      "featureTitle": "Add custom domain support guidance and ensure the app works correctly when served from a custom domain (no hard-coded localhost/canister-domain assumptions in the UI).",
+      "files": [
+        "frontend/CUSTOM_DOMAIN.md",
+        "frontend/src/config/runtime.ts"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-and-apply-a-coherent-visual-theme-for-the-app-colors-typography-spacing-and-component-styling-with-a-distinct-style-suitable-for-an-image-gallery-avoid-blue-purple-as-primary-colors",
+      "featureTitle": "Create and apply a coherent visual theme for the app (colors, typography, spacing, and component styling) with a distinct style suitable for an image gallery. Avoid blue/purple as primary colors.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-the-required-generated-static-images-to-the-frontend-and-render-them-from-the-static-assets-directory-at-frontend-public-assets-generated",
+      "featureTitle": "Add the required generated static images to the frontend and render them from the static assets directory at frontend/public/assets/generated.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
