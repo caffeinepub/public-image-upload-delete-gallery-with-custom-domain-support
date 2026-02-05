@@ -1,130 +1,139 @@
-import { useState, useEffect } from 'react';
-import { Trash2, Download, Calendar, HardDrive } from 'lucide-react';
-import { useDeleteImage, getImageUrl } from '../../hooks/useQueries';
-import type { ImageMetadata } from '../../hooks/useQueries';
+import { useState } from 'react';
+import { useDeleteImage } from '../../hooks/useQueries';
+import type { ImageData } from '../../hooks/useQueries';
+import { Button } from '../ui/button';
+import { Download, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog';
 
 interface GalleryItemCardProps {
-  image: ImageMetadata;
+  image: ImageData;
 }
 
 export function GalleryItemCard({ image }: GalleryItemCardProps) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const deleteMutation = useDeleteImage();
 
-  // Create blob URL for the image
-  useEffect(() => {
-    const url = getImageUrl(image);
-    setImageUrl(url);
-    
-    // Cleanup blob URL on unmount
-    return () => {
-      if (url) {
-        URL.revokeObjectURL(url);
-      }
-    };
-  }, [image]);
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = image.url;
+    link.download = image.filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleDelete = async () => {
     try {
       await deleteMutation.mutateAsync(image.id);
-      setShowDeleteConfirm(false);
+      setIsDialogOpen(false);
     } catch (error) {
-      console.error('Failed to delete image:', error);
+      // Error is handled by the mutation
+      console.error('Delete failed:', error);
     }
   };
 
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const formatSize = (bytes: number) => {
-    const kb = bytes / 1024;
-    if (kb < 1024) return `${kb.toFixed(1)} KB`;
-    return `${(kb / 1024).toFixed(1)} MB`;
-  };
-
   const isDeleting = deleteMutation.isPending;
+  const deleteError = deleteMutation.error;
 
   return (
-    <div className="group relative bg-card rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-      {/* Image */}
-      <div className="aspect-square bg-muted overflow-hidden">
+    <div className="gallery-item group">
+      <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
         <img
-          src={imageUrl}
+          src={image.url}
           alt={image.filename}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform group-hover:scale-105"
           loading="lazy"
         />
-      </div>
-
-      {/* Overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-          <h3 className="font-semibold text-sm truncate mb-2">{image.filename}</h3>
-          <div className="flex items-center gap-4 text-xs text-white/80 mb-3">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <span>{formatDate(image.uploadedAt)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <HardDrive className="h-3 w-3" />
-              <span>{formatSize(image.size)}</span>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <a
-              href={imageUrl}
-              download={image.filename}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-colors text-sm font-medium"
-            >
-              <Download className="h-4 w-4" />
-              Download
-            </a>
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={isDeleting}
-              className="flex items-center justify-center gap-2 px-3 py-2 bg-destructive/80 hover:bg-destructive backdrop-blur-sm rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </button>
-          </div>
+        
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={handleDownload}
+            className="h-10 w-10"
+            title="Download"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+          
+          <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="icon"
+                className="h-10 w-10"
+                title="Delete"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Image</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete "{image.filename}"? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              
+              {deleteError && (
+                <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-destructive">
+                      {deleteError instanceof Error ? deleteError.message : 'Failed to delete image'}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDelete();
+                  }}
+                  disabled={isDeleting}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete'
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-xl p-6 max-w-sm w-full border border-border shadow-xl">
-            <h3 className="text-lg font-semibold mb-2">Delete Image?</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Are you sure you want to delete "{image.filename}"? This action cannot be undone.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                disabled={isDeleting}
-                className="flex-1 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
-              >
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
+      <div className="mt-2 px-1">
+        <p className="text-sm font-medium truncate" title={image.filename}>
+          {image.filename}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {(Number(image.size) / 1024 / 1024).toFixed(2)} MB
+        </p>
+      </div>
     </div>
   );
 }

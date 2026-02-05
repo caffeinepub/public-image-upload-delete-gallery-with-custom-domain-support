@@ -1,51 +1,77 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 
-export interface ImageMetadata {
+export interface BlobMetadata {
   id: string;
   filename: string;
   contentType: string;
-  size: number;
-  uploadedAt: number;
-  data: Uint8Array;
+  size: bigint;
+  uploadedAt: bigint;
 }
 
-/**
- * Convert Uint8Array to blob URL for display
- */
-function createBlobUrl(data: Uint8Array, contentType: string): string {
-  // Create a new Uint8Array to ensure proper type compatibility
-  const arrayBuffer = new ArrayBuffer(data.length);
-  const view = new Uint8Array(arrayBuffer);
-  view.set(data);
-  const blob = new Blob([view], { type: contentType });
-  return URL.createObjectURL(blob);
+export interface ImageData extends BlobMetadata {
+  url: string;
 }
 
 /**
  * Hook to list all uploaded images
- * Note: This is a placeholder implementation since the backend interface is not yet defined
  */
 export function useListImages() {
   const { actor, isFetching } = useActor();
 
-  return useQuery<ImageMetadata[]>({
+  return useQuery<ImageData[]>({
     queryKey: ['images'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) {
+        throw new Error('Backend connection not initialized');
+      }
+
+      const actorAny = actor as any;
       
-      try {
-        // Placeholder: The actual backend method will be available once blob-storage mixin is properly exposed
-        // For now, return empty array until backend interface is updated
-        console.warn('Backend blob storage methods not yet available in interface');
-        return [];
-      } catch (error) {
-        console.error('Failed to list images:', error);
+      // Check if the required methods exist
+      if (typeof actorAny.listBlobs !== 'function') {
+        throw new Error('Backend blob storage API not available. Please redeploy the canister.');
+      }
+
+      const metadataList = await actorAny.listBlobs();
+      
+      if (!Array.isArray(metadataList)) {
         return [];
       }
+      
+      // Fetch blob data for each metadata entry
+      const images = await Promise.all(
+        metadataList.map(async (meta: any) => {
+          try {
+            const data = await actorAny.getBlob(meta.id);
+            
+            // Convert blob data to URL for display
+            const blob = new Blob([new Uint8Array(data)], { 
+              type: meta.contentType || 'application/octet-stream' 
+            });
+            const url = URL.createObjectURL(blob);
+            
+            return {
+              id: meta.id,
+              filename: meta.filename,
+              contentType: meta.contentType,
+              size: BigInt(meta.size),
+              uploadedAt: BigInt(meta.uploadedAt),
+              url,
+            };
+          } catch (error) {
+            console.error(`Failed to fetch blob ${meta.id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      // Filter out failed fetches
+      return images.filter((img): img is ImageData => img !== null);
     },
     enabled: !!actor && !isFetching,
-    refetchInterval: 10000, // Refresh every 10 seconds
+    retry: 2,
+    retryDelay: 1000,
   });
 }
 
@@ -64,31 +90,41 @@ export function useUploadImage() {
       file: File; 
       onProgress?: (percentage: number) => void;
     }) => {
-      if (!actor) throw new Error('Actor not initialized');
-
-      // Read file as bytes
-      const arrayBuffer = await file.arrayBuffer();
-      const bytes = Array.from(new Uint8Array(arrayBuffer));
-
-      // Simulate progress for now
-      if (onProgress) {
-        onProgress(50);
+      if (!actor) {
+        throw new Error('Backend connection not initialized');
       }
 
-      // Placeholder: The actual backend method will be available once blob-storage mixin is properly exposed
-      console.warn('Backend blob storage upload method not yet available in interface');
+      const actorAny = actor as any;
       
+      // Check if the required methods exist
+      if (typeof actorAny.storeBlob !== 'function') {
+        throw new Error('Backend blob storage API not available. Please redeploy the canister.');
+      }
+
+      // Read file as array buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+
+      if (onProgress) {
+        onProgress(25);
+      }
+
+      // Store blob with metadata
+      const id = await actorAny.storeBlob(bytes, {
+        filename: file.name,
+        contentType: file.type || 'application/octet-stream',
+      });
+
       if (onProgress) {
         onProgress(100);
       }
 
-      // Return a mock result for now
-      return { success: true };
+      return id;
     },
     onSuccess: () => {
-      // Invalidate and refetch images list
       queryClient.invalidateQueries({ queryKey: ['images'] });
     },
+    retry: 1,
   });
 }
 
@@ -101,23 +137,28 @@ export function useDeleteImage() {
 
   return useMutation({
     mutationFn: async (imageId: string) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) {
+        throw new Error('Backend connection not initialized');
+      }
       
-      // Placeholder: The actual backend method will be available once blob-storage mixin is properly exposed
-      console.warn('Backend blob storage delete method not yet available in interface');
+      const actorAny = actor as any;
       
-      return imageId;
+      // Check if the required methods exist
+      if (typeof actorAny.deleteBlob !== 'function') {
+        throw new Error('Backend blob storage API not available. Please redeploy the canister.');
+      }
+      
+      const success = await actorAny.deleteBlob(imageId);
+      
+      if (!success) {
+        throw new Error('Failed to delete image');
+      }
+      
+      return success;
     },
     onSuccess: () => {
-      // Invalidate and refetch images list
       queryClient.invalidateQueries({ queryKey: ['images'] });
     },
+    retry: 1,
   });
-}
-
-/**
- * Helper to convert image data to displayable URL
- */
-export function getImageUrl(image: ImageMetadata): string {
-  return createBlobUrl(image.data, image.contentType);
 }

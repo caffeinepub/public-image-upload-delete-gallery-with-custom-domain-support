@@ -1,109 +1,12 @@
 {
   "kind": "build_request",
-  "title": "Public image upload & delete gallery with custom domain support",
+  "title": "Untitled request",
   "priority": "normal",
-  "requirements": [
-    {
-      "id": "REQ-1",
-      "text": "Implement backend image storage APIs that allow any visitor (no authentication) to upload, list, fetch, and delete images.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Make an website where anyone can upload images and delete them"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes a method to upload an image (bytes + filename + content type) and returns a unique image id",
-        "Backend exposes a method to list uploaded images with metadata (at minimum: id, filename, content type, upload timestamp, and size)",
-        "Backend exposes a method to fetch an image by id and returns the original bytes and content type",
-        "Backend exposes a method to delete an image by id and returns a success/failure result",
-        "All methods work without requiring Internet Identity sign-in"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Build a frontend UI that lets any visitor upload images, view a gallery of uploaded images, and delete images from the gallery.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Make an website where anyone can upload images and delete them"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Page includes an image upload control that accepts common image types (e.g., PNG/JPEG/WebP/GIF) and triggers an upload to the backend",
-        "Gallery view shows all uploaded images returned by the backend list method",
-        "Each gallery item includes a delete action that removes the image via the backend and updates the UI",
-        "UI displays clear error messages for failed uploads/deletes and a loading state during network calls"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Add custom domain support guidance and ensure the app works correctly when served from a custom domain (no hard-coded localhost/canister-domain assumptions in the UI).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "also make a custom domain for the website"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Project includes written instructions describing how to connect a custom domain to the deployed app on the Internet Computer (high-level steps, what values the user must obtain, and where they are applied)",
-        "Frontend uses environment/config patterns so API calls resolve correctly regardless of whether the app is accessed via default canister URL or a custom domain"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Create and apply a coherent visual theme for the app (colors, typography, spacing, and component styling) with a distinct style suitable for an image gallery. Avoid blue/purple as primary colors.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "App has a consistent look and feel across upload controls, gallery cards, and buttons (typography, spacing, and color usage are unified)",
-        "Theme uses a non-blue/purple primary palette (e.g., warm neutrals with a contrasting accent color)"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Add the required generated static images to the frontend and render them from the static assets directory at frontend/public/assets/generated.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Generated images are placed under frontend/public/assets/generated and referenced directly by the UI (not served via the backend)",
-        "At least the logo is visible in the app UI (e.g., header) and the hero/banner is used in a top-of-page section"
-      ]
-    }
-  ],
-  "constraints": [
-    "Backend must remain a single Motoko actor (all logic in backend/main.mo).",
-    "Do not modify files under frontend/src/components/ui or any other immutablePaths listed in SYSTEM_CONTEXT; compose these components instead.",
-    "Do not add third-party authentication providers; if auth is added later it must use Internet Identity."
-  ],
-  "nonGoals": [
-    "User accounts, roles, or ownership rules for uploaded images (all images are public and deletable by anyone).",
-    "Using external storage providers (e.g., S3, Google Cloud Storage) or external databases.",
-    "Real-time collaboration or live updates via WebSockets.",
-    "Automated custom domain purchase or registrar-side DNS changes (provide guidance/instructions only)."
-  ],
+  "requirements": [],
+  "constraints": [],
+  "nonGoals": [],
   "imageRequirements": {
-    "required": [
-      "Minimal gallery-style logo mark, flat vector look, warm neutral palette (site-logo.dim_256x256.png)",
-      "Wide hero/banner illustration with abstract photo frames and subtle texture, warm neutral background (hero-banner.dim_1400x400.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

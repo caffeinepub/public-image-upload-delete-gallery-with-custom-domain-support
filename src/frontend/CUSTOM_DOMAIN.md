@@ -1,19 +1,18 @@
-# Custom Domain Setup Guide
+# Custom Domain Configuration Guide
 
-This guide explains how to connect a custom domain to your Internet Computer (IC) application.
+This guide explains how to connect a custom domain to your Image Gallery application deployed on the Internet Computer.
 
 ## Overview
 
-By default, your application is accessible via the IC's default canister URL (e.g., `https://[canister-id].ic0.app`). You can configure a custom domain (e.g., `gallery.example.com`) to make your application more accessible and professional.
+The Internet Computer supports custom domains through its boundary nodes. This allows you to serve your application from your own domain (e.g., `gallery.example.com`) instead of the default `.ic0.app` or `.raw.ic0.app` URLs.
 
 ## Prerequisites
 
-1. A registered domain name
-2. Access to your domain's DNS settings
-3. Your deployed canister ID
-4. `dfx` CLI installed and configured
+- A deployed canister on the Internet Computer mainnet
+- A domain name you control
+- Access to your domain's DNS settings
 
-## Step 1: Obtain Your Canister Information
+## Step 1: Configure DNS
 
-First, identify your frontend canister ID:
+Add a CNAME record pointing your domain to the IC boundary node:
 

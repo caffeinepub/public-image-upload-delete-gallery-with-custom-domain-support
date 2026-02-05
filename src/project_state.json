@@ -1,89 +1,210 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Website where anyone can upload and delete images, with support for a custom domain.",
+  "summary": "An Internet Computer (Motoko) + React application intended to provide a public image gallery backed by an IC canister. The React/Vite frontend supports selecting and validating images, uploading them to the backend canister, listing all images (fetching metadata and bytes), previewing them in a responsive grid, downloading, and deleting. The frontend also includes optional Internet Identity integration and runtime configuration designed to work across local development, IC mainnet, and custom-domain deployments. The Motoko backend currently exposes only a storage administration/maintenance mixin (authorization list refresh, dead-blob pruning, cycles refill, liveness checks) and does not implement the blob CRUD API that the frontend expects (list/store/get/delete).",
   "existing_features": [
     {
-      "id": "feature-build-a-frontend-ui-that-lets-any-visitor-upload-images-view-a-gallery-of-uploaded-images-and-delete-images-from-the-gallery",
-      "title": "Build a frontend UI that lets any visitor upload images, view a gallery of uploaded images, and delete images from the gallery.",
-      "reqIds": [
-        "REQ-2"
+      "id": "IF-1",
+      "title": "Internet Identity authentication provider",
+      "synonyms": [
+        "II auth",
+        "AuthClient integration",
+        "login/logout context"
       ],
+      "description": "Implements an InternetIdentityProvider React context that initializes AuthClient, loads any persisted identity, supports Internet Identity login/logout, and exposes login status flags and errors to the app.",
+      "reqIds": [],
       "version": 1
     },
     {
-      "id": "feature-add-custom-domain-support-guidance-and-ensure-the-app-works-correctly-when-served-from-a-custom-domain-no-hard-coded-localhost-canister-domain-assumptions-in-the-ui",
-      "title": "Add custom domain support guidance and ensure the app works correctly when served from a custom domain (no hard-coded localhost/canister-domain assumptions in the UI).",
-      "reqIds": [
-        "REQ-3"
+      "id": "IF-2",
+      "title": "Identity-aware IC actor creation hook",
+      "synonyms": [
+        "useActor",
+        "anonymous vs authenticated actor",
+        "actor caching"
       ],
+      "description": "Creates and caches an IC canister actor via createActorWithConfig; uses an anonymous actor when not logged in and an identity-bound actor when an identity is present; triggers invalidation/refetch of other queries when the actor changes.",
+      "reqIds": [],
       "version": 1
     },
     {
-      "id": "feature-create-and-apply-a-coherent-visual-theme-for-the-app-colors-typography-spacing-and-component-styling-with-a-distinct-style-suitable-for-an-image-gallery-avoid-blue-purple-as-primary-colors",
-      "title": "Create and apply a coherent visual theme for the app (colors, typography, spacing, and component styling) with a distinct style suitable for an image gallery. Avoid blue/purple as primary colors.",
-      "reqIds": [
-        "REQ-4"
+      "id": "IF-3",
+      "title": "Runtime configuration for networks and custom domains",
+      "synonyms": [
+        "dynamic host selection",
+        "custom domain support",
+        "canister ID config"
       ],
+      "description": "Computes backend canister ID and host at runtime from Vite/DFX env vars and browser origin, supporting local replica development, IC mainnet (ic0.app), and custom-domain deployments.",
+      "reqIds": [],
       "version": 1
     },
     {
-      "id": "feature-add-the-required-generated-static-images-to-the-frontend-and-render-them-from-the-static-assets-directory-at-frontend-public-assets-generated",
-      "title": "Add the required generated static images to the frontend and render them from the static assets directory at frontend/public/assets/generated.",
-      "reqIds": [
-        "REQ-5"
+      "id": "IF-4",
+      "title": "Image listing query (metadata + bytes)",
+      "synonyms": [
+        "useListImages",
+        "gallery fetch",
+        "blob listing"
       ],
+      "description": "React Query hook that calls actor.listBlobs() for metadata and then fetches each blob’s bytes via actor.getBlob(id), returning an ImageMetadata[] for rendering.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-5",
+      "title": "Image upload mutation",
+      "synonyms": [
+        "useUploadImage",
+        "storeBlob client",
+        "file upload"
+      ],
+      "description": "Uploads an image by converting a File to Uint8Array and calling actor.storeBlob(bytes, { filename, contentType }); supports a coarse progress callback and invalidates the images query on success.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-6",
+      "title": "Image deletion mutation",
+      "synonyms": [
+        "useDeleteImage",
+        "deleteBlob client",
+        "remove image"
+      ],
+      "description": "Deletes an image by id using actor.deleteBlob(imageId) and invalidates the images query on success.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-7",
+      "title": "Image blob URL helper for rendering",
+      "synonyms": [
+        "Uint8Array to Blob URL",
+        "getImageUrl",
+        "image display helper"
+      ],
+      "description": "Converts Uint8Array image data into a Blob object URL (URL.createObjectURL) for display in <img> tags and for download links.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-8",
+      "title": "Image uploader UI (drag-and-drop, validation, preview, progress)",
+      "synonyms": [
+        "ImageUploader",
+        "drag and drop upload",
+        "client-side validation"
+      ],
+      "description": "Provides an upload component with drag-and-drop and file picker support, validates type/size (max 5MB; JPEG/PNG/GIF/WebP), shows a local preview, and displays upload progress and error states.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-9",
+      "title": "Gallery grid UI with loading/empty/error states",
+      "synonyms": [
+        "GalleryGrid",
+        "gallery list UI",
+        "retry on error"
+      ],
+      "description": "Displays loading spinner, error panel with retry action, empty state when no images exist, and a responsive grid of image cards when data is available.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-10",
+      "title": "Gallery item card with download and delete confirmation",
+      "synonyms": [
+        "GalleryItemCard",
+        "download image",
+        "delete dialog"
+      ],
+      "description": "Renders image thumbnails with hover metadata overlay (filename, size, upload date), supports downloading via a generated <a download> link, and provides delete via a confirmation dialog with inline error display.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Frontend application shell and branding",
+      "synonyms": [
+        "App layout",
+        "Header/Footer",
+        "hero banner"
+      ],
+      "description": "Composes the overall UI including sticky header branding, hero banner, upload section, gallery section, and footer attribution; uses Tailwind-based theming.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "Deployment and custom domain documentation",
+      "synonyms": [
+        "DEPLOYMENT.md",
+        "CUSTOM_DOMAIN.md",
+        "setup guides"
+      ],
+      "description": "Includes written guides for local and mainnet deployment, environment configuration (canister IDs, networks), post-deployment verification steps, troubleshooting, and custom domain DNS/boundary-node setup.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Backend storage administration mixin",
+      "synonyms": [
+        "MixinStorage",
+        "authorized gateway list",
+        "dead-blob pruning",
+        "cycles refill"
+      ],
+      "description": "Motoko mixin providing administrative endpoints: update authorized gateway principals from an external cashier canister (env-configured), check blob liveness, list dead blobs for deletion (authorization-gated), confirm deletion and trigger GC, and refill the cashier canister with cycles.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Backend actor composition via mixin inclusion",
+      "synonyms": [
+        "backend/main.mo actor",
+        "mixin composition"
+      ],
+      "description": "Main Motoko actor is minimal and exposes the included storage administration endpoints by directly including the blob-storage mixin module.",
+      "reqIds": [],
       "version": 1
     }
   ],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Allow anyone to upload images to the website",
+      "summary": "Implement and deploy Motoko backend blob CRUD API (listBlobs/storeBlob/getBlob/deleteBlob) required by the React frontend so the gallery works",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Allow anyone to delete uploaded images",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Support connecting a custom domain to the website",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Implement backend image storage APIs that allow any visitor (no authentication) to upload, list, fetch, and delete images.",
-      "reqIds": [
-        "REQ-1"
-      ],
       "status": "pending"
     }
   ],
-  "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Minimal gallery-style logo mark, flat vector look, warm neutral palette (site-logo.dim_256x256.png)\n- Wide hero/banner illustration with abstract photo frames and subtle texture, warm neutral background (hero-banner.dim_1400x400.png)",
-  "generatedImages": [
-    {
-      "filename": "site-logo.dim_256x256.png",
-      "description": "Minimal gallery-style logo mark, flat vector look, warm neutral palette",
-      "targetWidth": 256,
-      "targetHeight": 256
-    },
-    {
-      "filename": "hero-banner.dim_1400x400.png",
-      "description": "Wide hero/banner illustration with abstract photo frames and subtle texture, warm neutral background",
-      "targetWidth": 1400,
-      "targetHeight": 400
-    }
+  "architectural_notes": [
+    "Frontend server-state is managed with @tanstack/react-query (queries/mutations) and cache invalidation for the image list after uploads/deletes.",
+    "IC canister interaction is encapsulated behind a dedicated useActor hook that creates anonymous vs identity-bound actors and triggers refetches on identity changes.",
+    "Internet Identity is implemented as a React context/provider using @dfinity/auth-client; delegation validity is checked to avoid redundant logins.",
+    "Runtime backend configuration (canister ID + host) is derived from Vite/DFX env vars and window.location.origin to support local replica, ic0.app, and custom domains.",
+    "Binary image rendering is handled client-side by converting Uint8Array bytes to Blob object URLs for <img> rendering and downloads.",
+    "UI is built with Tailwind CSS design tokens (CSS variables) and shadcn/ui-style components (buttons, dialogs, progress).",
+    "Backend uses a Motoko mixin pattern (include MixinStorage()) to compose storage administration endpoints into the main actor.",
+    "Backend maintenance endpoints rely on low-level Prim storage APIs (dead blob listing, pruning, GC trigger) and an env-var-configured external “cashier” canister for authorization lists/top-ups."
   ],
+  "known_issues": [
+    "Backend actor does not expose the blob CRUD methods the frontend calls (listBlobs/storeBlob/getBlob/deleteBlob); frontend will fail at runtime when calling missing methods.",
+    "frontend/src/backend.d.ts declares blob CRUD methods, but backend/main.mo currently only includes MixinStorage admin endpoints; type/interface mismatch can hide runtime errors until execution.",
+    "frontend/src/components/StorageRecoveryAlert.tsx is empty and not used; there is no implemented “stale backend” recovery UI despite other code/docs implying such a flow.",
+    "Object URLs created via URL.createObjectURL are never revoked (URL.revokeObjectURL), which can cause memory leaks during long sessions or repeated refreshes.",
+    "Image listing fetches full bytes for every image (Promise.all) with no pagination/lazy loading, which can be slow and memory-intensive for large galleries.",
+    "Upload progress is not real transport progress (jumps to 25% then 100%), so the progress UI is only indicative.",
+    "Runtime config can yield an empty backendCanisterId (only warns), which will break actor creation/backend calls in misconfigured deployments.",
+    "useActor invalidates and refetches all non-actor queries on actor changes, which may cause unnecessary network work during identity transitions.",
+    "Backend authorization principal list is stored in a transient variable in the mixin; it may reset across upgrades until refreshed.",
+    "Backend traps if CAFFFEINE_STORAGE_CASHIER_PRINCIPAL is not set, which can hard-fail administrative operations in misconfigured environments."
+  ],
+  "isFixRequest": true,
   "gameProjectType": "none",
-  "projectName": "Public image upload & delete gallery with custom domain support",
+  "projectName": "Image Gallery",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
